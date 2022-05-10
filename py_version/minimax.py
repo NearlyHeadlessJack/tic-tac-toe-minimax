@@ -19,7 +19,7 @@ board = [
     [0, 0, 0],
 ]
 
-
+# 判断是否胜利
 def evaluate(state):
 
     if wins(state, COMP):
@@ -31,7 +31,7 @@ def evaluate(state):
 
     return score
 
-
+# 胜利的状态
 def wins(state, player):
 
     win_state = [
@@ -49,12 +49,12 @@ def wins(state, player):
     else:
         return False
 
-
+# 游戏结束
 def game_over(state):
 
     return wins(state, HUMAN) or wins(state, COMP)
 
-
+# 返回空格位置列表
 def empty_cells(state):
 
     cells = []
@@ -66,7 +66,7 @@ def empty_cells(state):
 
     return cells
 
-
+# 判断所选位置是否被占用
 def valid_move(x, y):
 
     if [x, y] in empty_cells(board):
@@ -74,7 +74,7 @@ def valid_move(x, y):
     else:
         return False
 
-
+# 判断所选位置是否被占用并更改期盘状态
 def set_move(x, y, player):
 
     if valid_move(x, y):
@@ -83,7 +83,7 @@ def set_move(x, y, player):
     else:
         return False
 
-
+# minimax算法主体
 def minimax(state, depth, player):
 
     global total
@@ -115,7 +115,7 @@ def minimax(state, depth, player):
 
     return best
 
-
+# 多系统调用的清屏
 def clean():
 
     os_name = platform.system().lower()
@@ -124,7 +124,7 @@ def clean():
     else:
         system('clear')
 
-
+# 输出棋盘目前落子状态
 def render(state, c_choice, h_choice):
 
 
@@ -142,7 +142,7 @@ def render(state, c_choice, h_choice):
             print(f'| {symbol} |', end='')
         print('\n' + str_line)
 
-
+# 电脑运行的回合逻辑
 def ai_turn(c_choice, h_choice):
 
     depth = len(empty_cells(board))
@@ -164,7 +164,7 @@ def ai_turn(c_choice, h_choice):
     set_move(x, y, COMP)
     time.sleep(1)
 
-
+# 用户下棋回合逻辑
 def human_turn(c_choice, h_choice):
 
     depth = len(empty_cells(board))
@@ -199,7 +199,7 @@ def human_turn(c_choice, h_choice):
         except (KeyError, ValueError):
             print('Bad choice')
 
-
+# 主程序开始点
 def main():
 
     clean()
@@ -278,6 +278,6 @@ def main():
     print(total)
     exit()
 
-
+# 应用程序入口
 if __name__ == '__main__':
     main()
