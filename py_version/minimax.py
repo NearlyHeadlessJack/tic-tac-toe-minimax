@@ -13,9 +13,10 @@ total_this = 0
 HUMAN = -1
 COMP = +1
 board = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
 ]
 
 
@@ -42,6 +43,21 @@ def wins(state, player):
         [state[0][2], state[1][2], state[2][2]],
         [state[0][0], state[1][1], state[2][2]],
         [state[2][0], state[1][1], state[0][2]],
+        [state[0][1], state[0][2], state[0][3]],
+        [state[1][1], state[1][2], state[1][3]],
+        [state[2][1], state[2][2], state[2][3]],
+        [state[0][3], state[1][3], state[2][3]],
+        [state[1][3], state[2][3], state[3][3]],
+        [state[3][0], state[3][1], state[3][2]],
+        [state[3][1], state[3][2], state[3][3]],
+        [state[1][2], state[2][1], state[3][0]],
+        [state[1][3], state[2][2], state[3][1]],
+        [state[0][3], state[1][2], state[2][1]],
+        [state[0][1], state[1][2], state[2][3]],
+        [state[1][1], state[2][2], state[3][3]],
+        [state[1][0], state[2][1], state[3][2]],
+        [state[1][2], state[2][2], state[3][2]],
+        [state[1][1], state[2][1], state[3][1]],
     ]
     if [player, player, player] in win_state:
         return True
@@ -119,6 +135,7 @@ def minimax(state, depth, player):
 def negamax(state, depth, player):
     global total
     global total_this
+
     best = [-1, -1, -infinity]
 
     if depth == 0 or game_over(state):
@@ -129,6 +146,7 @@ def negamax(state, depth, player):
         x, y = cell[0], cell[1]
         state[x][y] = player
         score = negamax(state, depth - 1, -player)
+
         total += 1
         total_this += 1
         state[x][y] = 0
@@ -185,11 +203,12 @@ def ai_turn(c_choice, h_choice):
     print(f'Computer turn [{c_choice}]')
     render(board, c_choice, h_choice)
 
-    if depth == 9:
-        x = choice([0, 1, 2])
-        y = choice([0, 1, 2])
+    if depth == 16:
+        x = choice([0, 1, 2, 3])
+        y = choice([0, 1, 2, 3])
     else:
-        move = negamax(board, depth, COMP)
+        move = minimax(board, depth, COMP)
+
         PV.append(move)
         x, y = move[0], move[1]
 
@@ -206,18 +225,19 @@ def human_turn(c_choice, h_choice):
     # Dictionary of valid moves
     move = -1
     moves = {
-        1: [0, 0], 2: [0, 1], 3: [0, 2],
-        4: [1, 0], 5: [1, 1], 6: [1, 2],
-        7: [2, 0], 8: [2, 1], 9: [2, 2],
+        1: [0, 0], 2: [0, 1], 3: [0, 2], 4: [0, 3],
+        5: [1, 0], 6: [1, 1], 7: [1, 2], 8: [1, 3],
+        9: [2, 0], 10: [2, 1], 11: [2, 2], 12: [2, 3],
+        13: [3, 0], 14: [3, 1], 15: [3, 2], 16: [3, 3]
     }
 
     clean()
     print(f'Human turn [{h_choice}]')
     render(board, c_choice, h_choice)
 
-    while move < 1 or move > 9:
+    while move < 1 or move > 16:
         try:
-            move = int(input('Use numpad (1..9): '))
+            move = int(input('Use numpad (1..16): '))
             coord = moves[move]
             can_move = set_move(coord[0], coord[1], HUMAN)
             PV.append(moves[move])
