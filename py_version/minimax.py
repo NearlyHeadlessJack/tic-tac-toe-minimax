@@ -4,12 +4,11 @@ import platform
 import time
 from os import system
 
-
 PV = []
 global total
 global total_this
 total = 0
-total_this=0
+total_this = 0
 
 HUMAN = -1
 COMP = +1
@@ -19,9 +18,9 @@ board = [
     [0, 0, 0],
 ]
 
+
 # 判断是否胜利
 def evaluate(state):
-
     if wins(state, COMP):
         score = +1
     elif wins(state, HUMAN):
@@ -31,9 +30,9 @@ def evaluate(state):
 
     return score
 
+
 # 胜利的状态
 def wins(state, player):
-
     win_state = [
         [state[0][0], state[0][1], state[0][2]],
         [state[1][0], state[1][1], state[1][2]],
@@ -49,14 +48,14 @@ def wins(state, player):
     else:
         return False
 
+
 # 游戏结束
 def game_over(state):
-
     return wins(state, HUMAN) or wins(state, COMP)
+
 
 # 返回空格位置列表
 def empty_cells(state):
-
     cells = []
 
     for x, row in enumerate(state):
@@ -66,26 +65,26 @@ def empty_cells(state):
 
     return cells
 
+
 # 判断所选位置是否被占用
 def valid_move(x, y):
-
     if [x, y] in empty_cells(board):
         return True
     else:
         return False
 
+
 # 判断所选位置是否被占用并更改期盘状态
 def set_move(x, y, player):
-
     if valid_move(x, y):
         board[x][y] = player
         return True
     else:
         return False
 
+
 # minimax算法主体
 def minimax(state, depth, player):
-
     global total
     global total_this
     if player == COMP:
@@ -115,19 +114,52 @@ def minimax(state, depth, player):
 
     return best
 
+
+# negamax算法主体
+def negamax(state, depth, player):
+    global total
+    global total_this
+    best = [-1, -1, -infinity]
+
+    if depth == 0 or game_over(state):
+        score = estimate_value(state, player, depth)
+        return [-1, -1, -score]
+
+    for cell in empty_cells(state):
+        x, y = cell[0], cell[1]
+        state[x][y] = player
+        score = negamax(state, depth - 1, -player)
+        total += 1
+        total_this += 1
+        state[x][y] = 0
+        score[0], score[1] = x, y
+        if score[2] > best[2]:
+            best = score
+
+    best[2] *= -1
+    return best
+
+
+def estimate_value(state, player, depth):
+    if wins(state, player):
+        score = +1
+    else:
+        score = -1
+
+    return score * (depth + 1)
+
+
 # 多系统调用的清屏
 def clean():
-
     os_name = platform.system().lower()
     if 'windows' in os_name:
         system('cls')
     else:
         system('clear')
 
+
 # 输出棋盘目前落子状态
 def render(state, c_choice, h_choice):
-
-
     chars = {
         -1: h_choice,
         +1: c_choice,
@@ -142,9 +174,9 @@ def render(state, c_choice, h_choice):
             print(f'| {symbol} |', end='')
         print('\n' + str_line)
 
+
 # 电脑运行的回合逻辑
 def ai_turn(c_choice, h_choice):
-
     depth = len(empty_cells(board))
     if depth == 0 or game_over(board):
         return
@@ -157,16 +189,16 @@ def ai_turn(c_choice, h_choice):
         x = choice([0, 1, 2])
         y = choice([0, 1, 2])
     else:
-        move = minimax(board, depth, COMP)
+        move = negamax(board, depth, COMP)
         PV.append(move)
         x, y = move[0], move[1]
 
     set_move(x, y, COMP)
     time.sleep(1)
 
+
 # 用户下棋回合逻辑
 def human_turn(c_choice, h_choice):
-
     depth = len(empty_cells(board))
     if depth == 0 or game_over(board):
         return
@@ -199,9 +231,9 @@ def human_turn(c_choice, h_choice):
         except (KeyError, ValueError):
             print('Bad choice')
 
+
 # 主程序开始点
 def main():
-
     clean()
     h_choice = ''  # X or O
     c_choice = ''  # X or O
@@ -238,7 +270,6 @@ def main():
     # Main loop of this game
     while len(empty_cells(board)) > 0 and not game_over(board):
         if first == 'N':
-
             total_this = 0
             ai_turn(c_choice, h_choice)
             first = ''
@@ -268,15 +299,15 @@ def main():
         print('游戏结束，平局')
     ep = 1
     for pv in PV:
-
         print('第' + str(ep) + '层')
-        print('节点:'+ str(pv[0]+1) + " " + str(pv[1]+1))
+        print('节点:' + str(pv[0] + 1) + " " + str(pv[1] + 1))
         ep += 1
     print("共搜索节点数：")
     global total
 
     print(total)
     exit()
+
 
 # 应用程序入口
 if __name__ == '__main__':
