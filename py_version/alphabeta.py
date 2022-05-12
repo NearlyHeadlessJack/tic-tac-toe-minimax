@@ -152,9 +152,9 @@ def minimax_alpha_beta(state, depth, player, alpha, beta):
     if depth == 0 or game_over(state):
         score = evaluate(state)
         if player == COMP:
-            return [-1, -1, score], alpha, score
-        else:
             return [-1, -1, score], score, beta
+        else:
+            return [-1, -1, score], alpha, score
 
     for cell in empty_cells(state):
         x, y = cell[0], cell[1]
@@ -175,6 +175,7 @@ def minimax_alpha_beta(state, depth, player, alpha, beta):
             if score[2] < best[2]:
                 best = score  # min value
         if alpha >= beta:
+            print("剪枝")
             return best, alpha, beta
 
     return best, alpha, beta
