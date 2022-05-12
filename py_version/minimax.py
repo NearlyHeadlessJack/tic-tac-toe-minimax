@@ -135,6 +135,7 @@ def minimax(state, depth, player):
 def negamax(state, depth, player):
     global total
     global total_this
+
     best = [-1, -1, -infinity]
 
     if depth == 0 or game_over(state):
@@ -145,6 +146,7 @@ def negamax(state, depth, player):
         x, y = cell[0], cell[1]
         state[x][y] = player
         score = negamax(state, depth - 1, -player)
+
         total += 1
         total_this += 1
         state[x][y] = 0
@@ -154,46 +156,6 @@ def negamax(state, depth, player):
 
     best[2] *= -1
     return best
-
-
-# 带alpha-beta剪枝的minimax算法
-def minimax_alpha_beta(state, depth, player, alpha, beta):
-    global total
-    global total_this
-    if player == COMP:
-        best = [-1, -1, -infinity]
-    else:
-        best = [-1, -1, +infinity]
-
-    if depth == 0 or game_over(state):
-        score = evaluate(state)
-        if player == COMP:
-            return [-1, -1, score], alpha, score
-        else:
-            return [-1, -1, score], score, beta
-
-    for cell in empty_cells(state):
-        x, y = cell[0], cell[1]
-        state[x][y] = player
-        score, child_alpha, child_beta = minimax_alpha_beta(state, depth - 1, -player, alpha, beta)
-
-        total += 1
-        total_this += 1
-        state[x][y] = 0
-        score[0], score[1] = x, y
-
-        if player == COMP:
-            alpha = max(alpha, child_alpha, child_beta)
-            if score[2] > best[2]:
-                best = score  # max value
-        else:
-            beta = min(beta, child_alpha, child_beta)
-            if score[2] < best[2]:
-                best = score  # min value
-        if alpha >= beta:
-            return best, alpha, beta
-
-    return best, alpha, beta
 
 
 def estimate_value(state, player, depth):
@@ -245,7 +207,8 @@ def ai_turn(c_choice, h_choice):
         x = choice([0, 1, 2, 3])
         y = choice([0, 1, 2, 3])
     else:
-        move, alpha, beta = minimax_alpha_beta(board, depth, COMP, -infinity, +infinity)
+        move = minimax(board, depth, COMP)
+
         PV.append(move)
         x, y = move[0], move[1]
 
